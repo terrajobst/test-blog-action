@@ -1,0 +1,19 @@
+name: '.NET Blog Validation'
+description: 'Tooling to validate Markdown syntax for our blogs'
+inputs:
+  paths:
+    description: 'The file system path of the repo to validate'
+    required: true
+runs:
+  using: "composite"
+  steps: 
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.301
+    - name: Install dependencies
+      run: dotnet restore tools/blog-tools.sln
+    - name: Build
+      run: dotnet build tools/blog-tools.sln --configuration Release --no-restore --nologo
+    - name: Validate
+      run: dotnet run --project tools/blog-validate/blog-validate.csproj ${{ inputs.paths }}
